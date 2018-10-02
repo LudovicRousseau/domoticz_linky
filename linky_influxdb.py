@@ -19,7 +19,6 @@ collected via their website (API).
 
 import os
 import datetime
-import logging
 import linky_json
 import sys
 
@@ -35,13 +34,11 @@ def json_to_inflxudb(res, name, filename):
 
 # Main script
 def main(filename):
-    logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
-
-    logging.info("logging in as %s...", USERNAME)
+    print("logging in as %s...", USERNAME)
     token = linky_json.linky.login(USERNAME, PASSWORD)
-    logging.info("logged in successfully!")
+    print("logged in successfully!")
 
-    logging.info("retrieving data...")
+    print("retrieving data...")
     today = datetime.date.today()
 
     # Par heure
@@ -50,7 +47,7 @@ def main(filename):
             linky_json.dtostr(today - linky_json.relativedelta(days=2)),
             linky_json.dtostr(today))
 
-    logging.info("got data!")
+    print("got data!")
 
     res_heure_json = linky_json.export_hours_values_json_format(res_hour,
         "%s000000000")
