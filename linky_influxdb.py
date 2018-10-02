@@ -34,7 +34,7 @@ def json_to_inflxudb(res, name, filename):
 
 # Main script
 def main(filename):
-    print("logging in as %s...", USERNAME)
+    print("logging in as %s..." % USERNAME)
     token = linky_json.linky.login(USERNAME, PASSWORD)
     print("logged in successfully!")
 
