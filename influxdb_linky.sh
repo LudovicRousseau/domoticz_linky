@@ -14,7 +14,7 @@ then
   . "${BASE_DIR}"/"${CFG_FILE}"
   export LINKY_USERNAME
   export LINKY_PASSWORD
-  "${BASE_DIR}"/linky_influxdb.py > data.txt
+  "${BASE_DIR}"/linky_influxdb.py data.txt
 
   curl -XPOST "$INFLUXDB_HOST/write?db=$INFLUXDB_DATABASE" \
 	  --user $INFLUXDB_USER:$INFLUXDB_PASSWORD \

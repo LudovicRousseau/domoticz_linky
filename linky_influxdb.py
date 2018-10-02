@@ -21,17 +21,20 @@ import os
 import datetime
 import logging
 import linky_json
+import sys
+
 
 USERNAME = os.environ['LINKY_USERNAME']
 PASSWORD = os.environ['LINKY_PASSWORD']
 
-def json_to_inflxudb(res, name):
-    for e in res:
-        print("Linky %s=%f %s" % (name, e['conso'], e['time']))
+def json_to_inflxudb(res, name, filename):
+    with open(filename, "w") as f:
+        for e in res:
+            f.write("Linky %s=%f %s" % (name, e['conso'], e['time']))
 
 
 # Main script
-def main():
+def main(filename):
     logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
     logging.info("logging in as %s...", USERNAME)
@@ -52,7 +55,7 @@ def main():
     res_heure_json = linky_json.export_hours_values_json_format(res_hour,
         "%s000000000")
 
-    json_to_inflxudb(res_heure_json, "heure")
+    json_to_inflxudb(res_heure_json, "heure", filename)
 
     # par jour
     # données disponible depuis le 8/2/2018
@@ -63,8 +66,8 @@ def main():
     res_jour_json = linky_json.export_days_values_json_format(res_day,
         "%s000000000")
 
-    json_to_inflxudb(res_jour_json, "jour")
+    json_to_inflxudb(res_jour_json, "jour", filename)
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1])
