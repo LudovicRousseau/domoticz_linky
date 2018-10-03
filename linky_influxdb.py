@@ -29,7 +29,7 @@ PASSWORD = os.environ['LINKY_PASSWORD']
 def json_to_inflxudb(res, name, filename):
     with open(filename, "w") as f:
         for e in res:
-            f.write("Linky %s=%f %s" % (name, e['conso'], e['time']))
+            f.write("Linky %s=%f %s\n" % (name, e['conso'], e['time']))
 
 
 # Main script
