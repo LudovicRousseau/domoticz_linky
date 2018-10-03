@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -au
 set -e
@@ -10,7 +10,7 @@ cd $(dirname $0)
 # check configuration file
 if [ -f "${CFG_FILE}" ]
 then
-  . "${CFG_FILE}"
+  source "${CFG_FILE}"
   export LINKY_USERNAME
   export LINKY_PASSWORD
   ./linky_influxdb.py data.txt
