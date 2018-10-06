@@ -17,6 +17,7 @@ then
   ./linky_influxdb.py data.txt
 
   curl -XPOST "$INFLUXDB_HOST/write?db=$INFLUXDB_DATABASE" \
+	  --silent \
 	  --user $INFLUXDB_USER:$INFLUXDB_PASSWORD \
 	  --data-binary @data.txt
 else
