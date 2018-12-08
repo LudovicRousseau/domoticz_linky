@@ -1,70 +1,72 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""Generates energy consumption InfluxDB from Enedis (ERDF) consumption data
-collected via their website (API).
-"""
 
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#    linky_influxdb.py: get Linky data to file a InfluxDB database
+#    copyright (c) 2018  ludovic rousseau, <ludovic.rousseau@free.fr>
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+#    this program is free software: you can redistribute it and/or modify
+#    it under the terms of the gnu general public license as published by
+#    the free software foundation, either version 3 of the license, or
+#    (at your option) any later version.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#    this program is distributed in the hope that it will be useful,
+#    but without any warranty; without even the implied warranty of
+#    merchantability or fitness for a particular purpose.  see the
+#    gnu general public license for more details.
+#
+#    you should have received a copy of the gnu general public license
+#    along with this program.  if not, see <https://www.gnu.org/licenses/>.
 
 import os
-import datetime
-import linky_json
 import sys
+import json
+from dateutil.relativedelta import relativedelta
+import datetime
 
+from pylinky import LinkyClient
 
-USERNAME = os.environ['LINKY_USERNAME']
-PASSWORD = os.environ['LINKY_PASSWORD']
 
 def json_to_inflxudb(res, name, filename):
     with open(filename, "a") as f:
         for e in res:
-            f.write("Linky %s=%f %s\n" % (name, e['conso'], e['time']))
+            f.write("Linky %s=%f %s\n" % (name, e["conso"], e["time"]))
 
 
-# Main script
-def main(filename):
-    print("logging in as %s..." % USERNAME)
-    token = linky_json.linky.login(USERNAME, PASSWORD)
-    print("logged in successfully!")
+def main(username, password, filename):
+    print("Connect")
+    client = LinkyClient(username, password)
 
-    print("retrieving data...")
-    today = datetime.date.today()
+    print("Login as", username)
+    client.login()
 
-    # Par heure
-    # Yesterday and the day before
-    res_hour = linky_json.linky.get_data_per_hour(token,
-            linky_json.dtostr(today - linky_json.relativedelta(days=2)),
-            linky_json.dtostr(today))
+    #  data for the last 2 days, 1 mesure per 0.5 hour
+    # today
+    end = datetime.date.today()
+    #  2 days ago
+    begin = end - relativedelta(days=2)
 
-    print("got data!")
+    print("Fetch hour data")
+    res_hour = client.get_data_per_hour(begin, end)
+    res_hour = client.format_data(res_hour, "%s000000000")
 
-    res_heure_json = linky_json.export_hours_values_json_format(res_hour,
-        "%s000000000")
+    print("Save to file")
+    json_to_inflxudb(res_hour, "heure", filename)
 
-    json_to_inflxudb(res_heure_json, "heure", filename)
+    #  data for the last month, 1 mesure per day
+    end = datetime.date.today()
+    begin = end - relativedelta(months=1)
 
-    # par jour
-    # données disponible depuis le 8/2/2018
-    res_day = linky_json.linky.get_data_per_day(token,
-        linky_json.dtostr(today - linky_json.relativedelta(days=1, months=1)),
-        linky_json.dtostr(today - linky_json.relativedelta(days=1)))
+    print("Fetch day data")
+    res_day = client.get_data_per_day(begin, end)
+    res_hour = client.format_data(res_day, "%s000000000")
 
-    res_jour_json = linky_json.export_days_values_json_format(res_day,
-        "%s000000000")
+    print("Save to file", filename)
+    json_to_inflxudb(res_hour, "jour", filename)
 
-    json_to_inflxudb(res_jour_json, "jour", filename)
+    print("Close session")
+    client.close_session()
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    username = os.environ['LINKY_USERNAME']
+    password = os.environ['LINKY_PASSWORD']
+    sys.exit(main(username, password, sys.argv[1]))
