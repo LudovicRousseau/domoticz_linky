@@ -11,8 +11,6 @@ cd $(dirname $0)
 if [ -f "${CFG_FILE}" ]
 then
   source "${CFG_FILE}"
-  export LINKY_USERNAME
-  export LINKY_PASSWORD
   rm -f data.txt
   ./linky_influxdb.py data.txt
 
