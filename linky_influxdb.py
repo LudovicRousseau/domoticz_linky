@@ -45,7 +45,7 @@ def main(username, password, filename):
     begin = end - relativedelta(days=2)
 
     print("Fetch hour data")
-    res_hour = client.get_data_per_hour(begin, end)
+    res_hour = client.get_data_per_period("hourly", begin, end)
     res_hour = client.format_data(res_hour, "%s000000000")
 
     print("Save to file")
@@ -56,7 +56,7 @@ def main(username, password, filename):
     begin = end - relativedelta(months=1)
 
     print("Fetch day data")
-    res_day = client.get_data_per_day(begin, end)
+    res_day = client.get_data_per_period("daily", begin, end)
     res_hour = client.format_data(res_day, "%s000000000")
 
     print("Save to file", filename)
