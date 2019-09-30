@@ -32,8 +32,6 @@ def json_to_inflxudb(res, name, filename):
 
 
 def main(username, password, filename):
-    ret = 0  # no error by default
-
     print("Connect")
     client = LinkyClient(username, password)
 
@@ -49,8 +47,7 @@ def main(username, password, filename):
     print("Fetch hour data")
     res_hour = client.get_data_per_period("hourly", begin, end)
     if len(res_hour) <= 1:
-        print("ERROR: Pas de relevés horaires ?")
-        ret = 1
+        print("ERROR: Pas de relevés horaires ?", file=sys.stderr)
     res_hour = client.format_data(res_hour, "%s000000000")
 
     print("Save to file")
@@ -69,8 +66,6 @@ def main(username, password, filename):
 
     print("Close session")
     client.close_session()
-
-    return ret
 
 
 if __name__ == "__main__":
