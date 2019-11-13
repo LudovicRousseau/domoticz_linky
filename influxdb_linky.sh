@@ -3,7 +3,13 @@
 set -au
 set -e
 
-CFG_FILE="domoticz_linky.cfg"
+if [ $# -ne 1 ]
+then
+	echo "Usage: $0 config_file.cfg"
+	exit 2
+fi
+
+CFG_FILE="$1"
 
 cd $(dirname $0)
 
