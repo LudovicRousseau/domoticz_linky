@@ -25,13 +25,13 @@ import datetime
 from pylinky import LinkyClient
 
 
-def json_to_inflxudb(res, name, filename):
+def json_to_inflxudb(res, name, filename, influxdb_key):
     with open(filename, "a") as f:
         for e in res:
-            f.write("Linky %s=%f %s\n" % (name, e["conso"], e["time"]))
+            f.write("%s %s=%f %s\n" % (influxdb_key, name, e["conso"], e["time"]))
 
 
-def main(username, password, filename):
+def main(username, password, filename, influxdb_key):
     print("Connect")
     client = LinkyClient(username, password)
 
@@ -51,7 +51,7 @@ def main(username, password, filename):
     res_hour = client.format_data(res_hour, "%s000000000")
 
     print("Save to file")
-    json_to_inflxudb(res_hour, "heure", filename)
+    json_to_inflxudb(res_hour, "heure", filename, influxdb_key)
 
     #  data for the last month, 1 mesure per day
     end = datetime.date.today()
@@ -62,7 +62,7 @@ def main(username, password, filename):
     res_hour = client.format_data(res_day, "%s000000000")
 
     print("Save to file", filename)
-    json_to_inflxudb(res_hour, "jour", filename)
+    json_to_inflxudb(res_hour, "jour", filename, influxdb_key)
 
     print("Close session")
     client.close_session()
@@ -71,4 +71,5 @@ def main(username, password, filename):
 if __name__ == "__main__":
     username = os.environ['LINKY_USERNAME']
     password = os.environ['LINKY_PASSWORD']
-    sys.exit(main(username, password, sys.argv[1]))
+    influxdb_key = os.environ['INFLUXDB_KEY']
+    sys.exit(main(username, password, sys.argv[1], influxdb_key))
