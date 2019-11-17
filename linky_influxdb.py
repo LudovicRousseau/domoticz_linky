@@ -46,8 +46,14 @@ def main(username, password, filename, influxdb_key):
 
     print("Fetch hour data")
     res_hour = client.get_data_per_period("hourly", begin, end)
+    # there is at least one data
     if len(res_hour) <= 1:
         print("ERROR: Pas de relevés horaires ?", file=sys.stderr)
+    else:
+        # the first mesure is 0.0?
+        if float(res_hour['data'][0]['valeur']) == 0:
+            print("ERROR: mesures horaires nulles ?", file=sys.stderr)
+
     res_hour = client.format_data(res_hour, "%s000000000")
 
     print("Save to file")
