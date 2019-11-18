@@ -51,7 +51,7 @@ def main(username, password, filename, influxdb_key):
         print("ERROR: Pas de relevés horaires ?", file=sys.stderr)
     else:
         # the first mesure is 0.0?
-        if float(res_hour['data'][0]['valeur']) == 0:
+        if float(res_hour['data'][49]['valeur']) == 0:
             print("ERROR: mesures horaires nulles ?", file=sys.stderr)
 
     res_hour = client.format_data(res_hour, "%s000000000")
