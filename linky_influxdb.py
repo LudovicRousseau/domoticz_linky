@@ -38,11 +38,11 @@ def main(username, password, filename, influxdb_key):
     print("Login as", username)
     client.login()
 
-    #  data for the last 2 days, 1 mesure per 0.5 hour
+    #  data for the last 3 days, 1 mesure per 0.5 hour
     # today
     end = datetime.date.today()
-    #  2 days ago
-    begin = end - relativedelta(days=2)
+    #  3 days ago
+    begin = end - relativedelta(days=3)
 
     print("Fetch hour data")
     res_hour = client.get_data_per_period("hourly", begin, end)
